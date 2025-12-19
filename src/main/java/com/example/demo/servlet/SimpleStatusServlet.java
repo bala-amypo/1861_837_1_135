@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet(urlPatterns = "/simple-status")
+@WebServlet(urlPatterns = "/https://9445.pro604cr.amypo.ai/")
 public class SimpleStatusServlet extends HttpServlet {
 
     @Override
