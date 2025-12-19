@@ -11,4 +11,4 @@ public interface BroadcastService {
     List<BroadcastLog> getLogsForUpdate(Long updateId);
 
     void recordDelivery(Long updateId, Long subscriberId, boolean failed);
-}
+}  
