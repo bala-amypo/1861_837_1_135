@@ -29,23 +29,57 @@ public class EventUpdate {
     @OneToMany(mappedBy = "eventUpdate")
     private List<BroadcastLog> broadcastLogs;
 
-    public EventUpdate() {}
+    // ✅ No-arg constructor
+    public EventUpdate() {
+    }
 
+    // ✅ Parameterized constructor
     public EventUpdate(Event event, String updateContent, String updateType) {
         this.event = event;
         this.updateContent = updateContent;
         this.updateType = updateType;
     }
 
+    // ✅ Auto timestamp
     @PrePersist
     protected void onCreate() {
         this.postedAt = Timestamp.from(Instant.now());
     }
 
-    // Getters
-    public Long getId() { return id; }
-    public Event getEvent() { return event; }
-    public String getUpdateContent() { return updateContent; }
-    public String getUpdateType() { return updateType; }
-    public Timestamp getPostedAt() { return postedAt; }
+    // =====================
+    // Getters and Setters
+    // =====================
+
+    public Long getId() {
+        return id;
+    }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    // 🔥 THIS SETTER FIXES YOUR BUILD ERROR
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public String getUpdateContent() {
+        return updateContent;
+    }
+
+    public void setUpdateContent(String updateContent) {
+        this.updateContent = updateContent;
+    }
+
+    public String getUpdateType() {
+        return updateType;
+    }
+
+    public void setUpdateType(String updateType) {
+        this.updateType = updateType;
+    }
+
+    public Timestamp getPostedAt() {
+        return postedAt;
+    }
 }
