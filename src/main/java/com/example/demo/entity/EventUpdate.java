@@ -1,0 +1,51 @@
+package com.example.demo.entity;
+
+import jakarta.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.util.List;
+
+@Entity
+@Table(name = "event_updates")
+public class EventUpdate {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
+    private Event event;
+
+    @Column(nullable = false, length = 1000)
+    private String updateContent;
+
+    @Column(nullable = false)
+    private String updateType;
+
+    @Column(nullable = false, updatable = false)
+    private Timestamp postedAt;
+
+    @OneToMany(mappedBy = "eventUpdate")
+    private List<BroadcastLog> broadcastLogs;
+
+    public EventUpdate() {}
+
+    public EventUpdate(Event event, String updateContent, String updateType) {
+        this.event = event;
+        this.updateContent = updateContent;
+        this.updateType = updateType;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.postedAt = Timestamp.from(Instant.now());
+    }
+
+    // Getters
+    public Long getId() { return id; }
+    public Event getEvent() { return event; }
+    public String getUpdateContent() { return updateContent; }
+    public String getUpdateType() { return updateType; }
+    public Timestamp getPostedAt() { return postedAt; }
+}
