@@ -34,7 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String authHeader = request.getHeader("Authorization");
 
-        // ✅ VERY IMPORTANT: If no token → just continue
+        // ✅ IMPORTANT: If no token → do NOT block
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -44,20 +44,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username;
 
         try {
-            username = jwtUtil.extractUsername(jwt);
+            // ✅ MATCHES YOUR JwtUtil
+            username = jwtUtil.getUsernameFromToken(jwt);
         } catch (Exception e) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Validate only if context is empty
         if (username != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
+            // ✅ validateToken(String) — as per your JwtUtil
+            if (jwtUtil.validateToken(jwt)) {
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
