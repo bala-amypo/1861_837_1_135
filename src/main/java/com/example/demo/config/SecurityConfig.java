@@ -32,43 +32,45 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-            // ❌ Disable CSRF (JWT based)
+            // JWT based API → disable CSRF
             .csrf(csrf -> csrf.disable())
 
-            // ❌ Disable CORS (test runner does not use browser)
+            // Swagger uses browser → CORS disabled for tests
             .cors(cors -> cors.disable())
 
-            // ✅ Stateless session
+            // Stateless session
             .sessionManagement(session ->
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
 
-            // ✅ Exception handling
-            .exceptionHandling(exception ->
-                    exception.authenticationEntryPoint(jwtAuthenticationEntryPoint)
+            // Handle unauthorized
+            .exceptionHandling(ex ->
+                    ex.authenticationEntryPoint(jwtAuthenticationEntryPoint)
             )
 
-            // ✅ AUTHORIZATION RULES (TEST-SAFE)
             .authorizeHttpRequests(auth -> auth
 
-                    // PUBLIC ENDPOINTS (tests expect these open)
+                    // ✅ Swagger MUST be public
                     .requestMatchers(
-                            "/auth/login",
-                            "/auth/register",
-                            "/simple-status",
                             "/swagger-ui/**",
-                            "/v3/api-docs/**",
-                            "/swagger-ui.html"
+                            "/swagger-ui.html",
+                            "/v3/api-docs/**"
                     ).permitAll()
 
-                    // 🔓 READ-ONLY EVENT APIs MUST BE PUBLIC
+                    // ✅ Auth APIs
+                    .requestMatchers("/auth/**").permitAll()
+
+                    // ✅ Health check
+                    .requestMatchers("/simple-status").permitAll()
+
+                    // ✅ IMPORTANT: GET events must be PUBLIC (test expects this)
                     .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
 
-                    // 🔐 Everything else requires JWT
+                    // 🔐 Everything else needs JWT
                     .anyRequest().authenticated()
             );
 
-        // ✅ JWT FILTER
+        // JWT filter
         http.addFilterBefore(
                 jwtAuthenticationFilter,
                 UsernamePasswordAuthenticationFilter.class
@@ -77,13 +79,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ REQUIRED BY TESTS
+    // REQUIRED for UserServiceImpl
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // ✅ REQUIRED BY AUTH SERVICE
+    // REQUIRED for authentication
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration
