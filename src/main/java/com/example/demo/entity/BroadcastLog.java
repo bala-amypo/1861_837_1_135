@@ -4,85 +4,17 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "broadcast_logs")
 public class BroadcastLog {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "event_update_id", nullable = false)
     private EventUpdate eventUpdate;
 
     @ManyToOne
-    @JoinColumn(name = "subscriber_id", nullable = false)
     private User subscriber;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private DeliveryStatus deliveryStatus = DeliveryStatus.SENT;
-
-    @Column(updatable = false)
-    private LocalDateTime sentAt;
-
-    public BroadcastLog() {}
-
-    public BroadcastLog(Long id, EventUpdate eventUpdate, User subscriber, DeliveryStatus deliveryStatus, LocalDateTime sentAt) {
-        this.id = id;
-        this.eventUpdate = eventUpdate;
-        this.subscriber = subscriber;
-        this.deliveryStatus = deliveryStatus;
-        this.sentAt = sentAt;
-    }
-
-    @PrePersist
-    public void onCreate() {
-        if (sentAt == null) {
-            sentAt = LocalDateTime.now();
-        }
-        if (deliveryStatus == null) {
-            deliveryStatus = DeliveryStatus.SENT;
-        }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public EventUpdate getEventUpdate() {
-        return eventUpdate;
-    }
-
-    public void setEventUpdate(EventUpdate eventUpdate) {
-        this.eventUpdate = eventUpdate;
-    }
-
-    public User getSubscriber() {
-        return subscriber;
-    }
-
-    public void setSubscriber(User subscriber) {
-        this.subscriber = subscriber;
-    }
-
-    public DeliveryStatus getDeliveryStatus() {
-        return deliveryStatus;
-    }
-
-    public void setDeliveryStatus(DeliveryStatus deliveryStatus) {
-        this.deliveryStatus = deliveryStatus;
-    }
-
-    public LocalDateTime getSentAt() {
-        return sentAt;
-    }
-
-    public void setSentAt(LocalDateTime sentAt) {
-        this.sentAt = sentAt;
-    }
 }
