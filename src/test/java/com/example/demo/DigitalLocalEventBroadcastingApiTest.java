@@ -29,7 +29,7 @@ public class DigitalLocalEventBroadcastingApiTest {
     private EventRepository eventRepository;
     private EventUpdateRepository eventUpdateRepository;
     private SubscriptionRepository subscriptionRepository;
-    private BroadcastLogRepository broadcastLogRepository;
+    private BroadcastLogRepository broadcastLogRepository;sd
 
     private UserService userService;
     private EventService eventService;
