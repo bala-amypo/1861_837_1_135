@@ -1,12 +1,13 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 public class Subscription {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @ManyToOne
@@ -21,4 +22,12 @@ public class Subscription {
     public void onCreate() {
         subscribedAt = Instant.now();
     }
+
+    // getters & setters
+    public Long getId() { return id; }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
+    public Instant getSubscribedAt() { return subscribedAt; }
 }
