@@ -1,9 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event_updates")
@@ -17,48 +15,52 @@ public class EventUpdate {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false)
     private String updateContent;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String updateType;
+    private UpdateType updateType;
 
-    @Column(nullable = false, updatable = false)
-    private Timestamp postedAt;
+    @Column(updatable = false)
+    private LocalDateTime timestamp;
 
-    @OneToMany(mappedBy = "eventUpdate")
-    private List<BroadcastLog> broadcastLogs;
+    @Enumerated(EnumType.STRING)
+    private SeverityLevel severityLevel;
 
-    // ✅ No-arg constructor
-    public EventUpdate() {
-    }
+    public EventUpdate() {}
 
-    // ✅ Parameterized constructor
-    public EventUpdate(Event event, String updateContent, String updateType) {
+    public EventUpdate(Long id, Event event, String updateContent, UpdateType updateType, LocalDateTime timestamp, SeverityLevel severityLevel) {
+        this.id = id;
         this.event = event;
         this.updateContent = updateContent;
         this.updateType = updateType;
+        this.timestamp = timestamp;
+        this.severityLevel = severityLevel;
     }
 
-    // ✅ Auto timestamp
     @PrePersist
-    protected void onCreate() {
-        this.postedAt = Timestamp.from(Instant.now());
+    public void onCreate() {
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
+        if (severityLevel == null) {
+            severityLevel = SeverityLevel.LOW;
+        }
     }
-
-    // =====================
-    // Getters and Setters
-    // =====================
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Event getEvent() {
         return event;
     }
 
-    // 🔥 THIS SETTER FIXES YOUR BUILD ERROR
     public void setEvent(Event event) {
         this.event = event;
     }
@@ -71,15 +73,27 @@ public class EventUpdate {
         this.updateContent = updateContent;
     }
 
-    public String getUpdateType() {
+    public UpdateType getUpdateType() {
         return updateType;
     }
 
-    public void setUpdateType(String updateType) {
+    public void setUpdateType(UpdateType updateType) {
         this.updateType = updateType;
     }
 
-    public Timestamp getPostedAt() {
-        return postedAt;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public SeverityLevel getSeverityLevel() {
+        return severityLevel;
+    }
+
+    public void setSeverityLevel(SeverityLevel severityLevel) {
+        this.severityLevel = severityLevel;
     }
 }
