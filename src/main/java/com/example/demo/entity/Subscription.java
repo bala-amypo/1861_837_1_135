@@ -6,7 +6,8 @@ import java.time.Instant;
 @Entity
 public class Subscription {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @ManyToOne
@@ -22,5 +23,14 @@ public class Subscription {
         subscribedAt = Instant.now();
     }
 
-    // getters & setters
+    // GETTERS & SETTERS
+    public Long getId() { return id; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public Event getEvent() { return event; }
+    public void setEvent(Event event) { this.event = event; }
+
+    public Instant getSubscribedAt() { return subscribedAt; }
 }
