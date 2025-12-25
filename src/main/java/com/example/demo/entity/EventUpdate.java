@@ -1,37 +1,99 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "event_updates")
 public class EventUpdate {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    private Instant timestamp;
+    @Column(nullable = false)
+    private String updateContent;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UpdateType updateType;
+
+    @Column(updatable = false)
+    private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
     private SeverityLevel severityLevel;
 
-    @PrePersist
-    public void onCreate() {
-        timestamp = Instant.now();
-        if (severityLevel == null) severityLevel = SeverityLevel.LOW;
+    public EventUpdate() {}
+
+    public EventUpdate(Long id, Event event, String updateContent, UpdateType updateType, LocalDateTime timestamp, SeverityLevel severityLevel) {
+        this.id = id;
+        this.event = event;
+        this.updateContent = updateContent;
+        this.updateType = updateType;
+        this.timestamp = timestamp;
+        this.severityLevel = severityLevel;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    @PrePersist
+    public void onCreate() {
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
+        if (severityLevel == null) {
+            severityLevel = SeverityLevel.LOW;
+        }
+    }
 
-    public Event getEvent() { return event; }
-    public void setEvent(Event event) { this.event = event; }
+    public Long getId() {
+        return id;
+    }
 
-    public Instant getTimestamp() { return timestamp; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public SeverityLevel getSeverityLevel() { return severityLevel; }
-    public void setSeverityLevel(SeverityLevel severityLevel) { this.severityLevel = severityLevel; }
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
+    public String getUpdateContent() {
+        return updateContent;
+    }
+
+    public void setUpdateContent(String updateContent) {
+        this.updateContent = updateContent;
+    }
+
+    public UpdateType getUpdateType() {
+        return updateType;
+    }
+
+    public void setUpdateType(UpdateType updateType) {
+        this.updateType = updateType;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public SeverityLevel getSeverityLevel() {
+        return severityLevel;
+    }
+
+    public void setSeverityLevel(SeverityLevel severityLevel) {
+        this.severityLevel = severityLevel;
+    }
 }

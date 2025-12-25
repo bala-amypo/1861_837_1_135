@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface BroadcastLogRepository extends JpaRepository<BroadcastLog, Long> {
-
     List<BroadcastLog> findByEventUpdateId(Long eventUpdateId);
-
     List<BroadcastLog> findBySubscriberId(Long subscriberId);
 }
