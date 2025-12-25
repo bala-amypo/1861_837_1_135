@@ -1,9 +1,3 @@
-package com.example.demo.repository;
-
-import com.example.demo.entity.*;
-import java.util.*;
-
-public interface BroadcastLogRepository {
-    BroadcastLog save(BroadcastLog log);
+public interface BroadcastLogRepository extends JpaRepository<BroadcastLog, Long> {
     List<BroadcastLog> findByEventUpdateId(Long updateId);
 }
