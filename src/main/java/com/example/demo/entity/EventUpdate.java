@@ -13,8 +13,6 @@ public class EventUpdate {
     @ManyToOne
     private Event event;
 
-    private String updateContent;
-
     private Instant timestamp;
 
     @Enumerated(EnumType.STRING)
@@ -26,15 +24,11 @@ public class EventUpdate {
         if (severityLevel == null) severityLevel = SeverityLevel.LOW;
     }
 
-    // GETTERS & SETTERS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
     public Event getEvent() { return event; }
     public void setEvent(Event event) { this.event = event; }
-
-    public String getUpdateContent() { return updateContent; }
-    public void setUpdateContent(String updateContent) { this.updateContent = updateContent; }
 
     public Instant getTimestamp() { return timestamp; }
 

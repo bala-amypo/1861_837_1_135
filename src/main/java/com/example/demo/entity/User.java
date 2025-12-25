@@ -6,7 +6,8 @@ import java.time.Instant;
 @Entity
 public class User {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     private String email;
@@ -19,11 +20,21 @@ public class User {
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = Instant.now();
-        if (this.role == null) {
-            this.role = Role.SUBSCRIBER;
-        }
+        createdAt = Instant.now();
+        if (role == null) role = Role.SUBSCRIBER;
     }
 
-    // getters & setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public Instant getCreatedAt() { return createdAt; }
 }

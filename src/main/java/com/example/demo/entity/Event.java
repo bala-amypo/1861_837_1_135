@@ -18,7 +18,7 @@ public class Event {
     @ManyToOne
     private User publisher;
 
-    private boolean isActive = true;
+    private boolean isActive;
     private Instant createdAt;
     private Instant lastUpdatedAt;
 
@@ -34,7 +34,6 @@ public class Event {
         lastUpdatedAt = Instant.now();
     }
 
-    // GETTERS & SETTERS
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

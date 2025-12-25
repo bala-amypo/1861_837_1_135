@@ -23,7 +23,6 @@ public class Subscription {
         subscribedAt = Instant.now();
     }
 
-    // GETTERS & SETTERS
     public Long getId() { return id; }
 
     public User getUser() { return user; }
