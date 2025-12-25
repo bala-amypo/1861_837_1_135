@@ -6,8 +6,7 @@ import java.time.Instant;
 @Entity
 public class EventUpdate {
 
-    @Id
-    @GeneratedValue
+    @Id @GeneratedValue
     private Long id;
 
     @ManyToOne
@@ -27,11 +26,4 @@ public class EventUpdate {
     }
 
     // getters & setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Event getEvent() { return event; }
-    public void setEvent(Event event) { this.event = event; }
-    public Instant getTimestamp() { return timestamp; }
-    public SeverityLevel getSeverityLevel() { return severityLevel; }
-    public void setSeverityLevel(SeverityLevel severityLevel) { this.severityLevel = severityLevel; }
 }
