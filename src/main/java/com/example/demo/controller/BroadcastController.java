@@ -2,8 +2,6 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.BroadcastLog;
 import com.example.demo.service.BroadcastService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,20 +17,12 @@ public class BroadcastController {
     }
 
     @PostMapping("/trigger/{updateId}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> triggerBroadcast(@PathVariable Long updateId) {
+    public void trigger(@PathVariable Long updateId) {
         broadcastService.broadcastUpdate(updateId);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/logs/{updateId}")
-    public ResponseEntity<List<BroadcastLog>> getLogsForUpdate(@PathVariable Long updateId) {
-        return ResponseEntity.ok(broadcastService.getLogsForUpdate(updateId));
-    }
-
-    @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<BroadcastLog>> getAllLogs() {
-        return ResponseEntity.ok(broadcastService.getAllLogs());
+    public List<BroadcastLog> logs(@PathVariable Long updateId) {
+        return broadcastService.getLogsForUpdate(updateId);
     }
 }
