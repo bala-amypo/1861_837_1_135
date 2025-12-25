@@ -8,9 +8,11 @@ import com.example.demo.repository.BroadcastLogRepository;
 import com.example.demo.repository.EventUpdateRepository;
 import com.example.demo.repository.SubscriptionRepository;
 import com.example.demo.service.BroadcastService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class BroadcastServiceImpl implements BroadcastService {
 
     private final EventUpdateRepository eventUpdateRepository;
