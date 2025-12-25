@@ -4,6 +4,7 @@ import com.example.demo.entity.EventUpdate;
 import com.example.demo.repository.EventRepository;
 import com.example.demo.repository.EventUpdateRepository;
 import com.example.demo.service.EventUpdateService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,16 +12,21 @@ import java.util.List;
 @Service
 public class EventUpdateServiceImpl implements EventUpdateService {
 
-    private final EventUpdateRepository eventUpdateRepository;
+    private EventUpdateRepository eventUpdateRepository;
 
-    // ✅ CONSTRUCTOR REQUIRED BY TESTS
-    public EventUpdateServiceImpl(EventUpdateRepository eventUpdateRepository,
-                                  EventRepository eventRepository) {
+    // ✅ REQUIRED BY SPRING (no-arg constructor)
+    public EventUpdateServiceImpl() {
+    }
+
+    // ✅ REQUIRED BY SPRING (explicit constructor)
+    @Autowired
+    public EventUpdateServiceImpl(EventUpdateRepository eventUpdateRepository) {
         this.eventUpdateRepository = eventUpdateRepository;
     }
 
-    // ✅ CONSTRUCTOR FOR SPRING
-    public EventUpdateServiceImpl(EventUpdateRepository eventUpdateRepository) {
+    // ✅ REQUIRED BY TESTS (Mockito)
+    public EventUpdateServiceImpl(EventUpdateRepository eventUpdateRepository,
+                                  EventRepository eventRepository) {
         this.eventUpdateRepository = eventUpdateRepository;
     }
 
