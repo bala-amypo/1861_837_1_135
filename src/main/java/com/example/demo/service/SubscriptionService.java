@@ -6,7 +6,6 @@ import java.util.List;
 public interface SubscriptionService {
     Subscription subscribe(Long userId, Long eventId);
     void unsubscribe(Long userId, Long eventId);
-    List<Subscription> getUserSubscriptions(Long userId);
     boolean isSubscribed(Long userId, Long eventId);
-    List<Subscription> getAllSubscriptions();
+    List<Subscription> getUserSubscriptions(Long userId);
 }

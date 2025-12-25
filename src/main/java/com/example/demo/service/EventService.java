@@ -9,6 +9,4 @@ public interface EventService {
     Event getById(Long id);
     List<Event> getActiveEvents();
     void deactivateEvent(Long id);
-    Event getEventById(Long id);
-    List<Event> getAllEvents();
 }
