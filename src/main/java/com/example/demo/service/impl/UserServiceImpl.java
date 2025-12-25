@@ -1,31 +1,33 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.entity.*;
-import com.example.demo.exception.*;
-import com.example.demo.repository.*;
-import com.example.demo.service.*;
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
+import com.example.demo.service.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository repo;
-    private final PasswordEncoder encoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository r, PasswordEncoder e) {
-        this.repo = r;
-        this.encoder = e;
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public User register(User u) {
-        if (repo.existsByEmail(u.getEmail())) {
-            throw new BadRequestException("Email already registered");
+    @Override
+    public User register(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Email already registered");
         }
-        u.setPassword(encoder.encode(u.getPassword()));
-        return repo.save(u);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userRepository.save(user);
     }
 
+    @Override
     public User findByEmail(String email) {
-        return repo.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
