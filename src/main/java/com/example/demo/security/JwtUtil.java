@@ -10,10 +10,19 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final String secret = "ThisIsAVerySecureSecretKeyForJwtDemo123456789";
-    private final long validityInMs = 3600000;
+    private final String secret;
+    private final long validityInMs;
 
+    // ✅ REQUIRED BY TESTS
+    public JwtUtil(String secret, long validityInMs) {
+        this.secret = secret;
+        this.validityInMs = validityInMs;
+    }
+
+    // ✅ REQUIRED BY SPRING
     public JwtUtil() {
+        this.secret = "ThisIsAVerySecureSecretKeyForJwtDemo123456789";
+        this.validityInMs = 3600000;
     }
 
     public String generateToken(Long userId, String email, String role) {
