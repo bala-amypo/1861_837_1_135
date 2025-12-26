@@ -29,7 +29,8 @@ public class SubscriptionController {
 
     private Long getCurrentUserId(Authentication authentication) {
         String email = authentication.getName();
-        return userService.findByEmail(email).map(User::getId).orElseThrow();
+        User user = userService.findByEmail(email);
+        return user.getId();
     }
 
     @PostMapping("/{eventId}")

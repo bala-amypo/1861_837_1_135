@@ -65,7 +65,7 @@ public class AuthController {
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userService.findByEmail(request.getEmail()).orElseThrow(); // Should exist if auth passed
+        User user = userService.findByEmail(request.getEmail()); // Removed .orElseThrow() — service throws if not found
 
         String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
 
