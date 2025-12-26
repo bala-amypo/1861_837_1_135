@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "event_updates")
@@ -22,14 +22,14 @@ public class EventUpdate {
     @Column(nullable = false)
     private UpdateType updateType;
 
-    private LocalDateTime timestamp;
+    private Instant timestamp;
 
     @Enumerated(EnumType.STRING)
     private SeverityLevel severityLevel;
 
     public EventUpdate() {}
 
-    public EventUpdate(Long id, Event event, String updateContent, UpdateType updateType, LocalDateTime timestamp, SeverityLevel severityLevel) {
+    public EventUpdate(Long id, Event event, String updateContent, UpdateType updateType, Instant timestamp, SeverityLevel severityLevel) {
         this.id = id;
         this.event = event;
         this.updateContent = updateContent;
@@ -40,7 +40,7 @@ public class EventUpdate {
 
     @PrePersist
     public void onCreate() {
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = Instant.now();
         if (this.severityLevel == null) {
             this.severityLevel = SeverityLevel.LOW;
         }
@@ -78,11 +78,11 @@ public class EventUpdate {
         this.updateType = updateType;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Instant getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Instant timestamp) {
         this.timestamp = timestamp;
     }
 

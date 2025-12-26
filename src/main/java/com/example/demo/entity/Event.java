@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "events")
@@ -29,12 +29,12 @@ public class Event {
     @Column(nullable = false)
     private boolean isActive = true;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime lastUpdatedAt;
+    private Instant createdAt;
+    private Instant lastUpdatedAt;
 
     public Event() {}
 
-    public Event(Long id, String title, String description, String location, String category, User publisher, boolean isActive, LocalDateTime createdAt, LocalDateTime lastUpdatedAt) {
+    public Event(Long id, String title, String description, String location, String category, User publisher, boolean isActive, Instant createdAt, Instant lastUpdatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -48,14 +48,17 @@ public class Event {
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.lastUpdatedAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
+        this.lastUpdatedAt = Instant.now();
+        this.isActive = true;  // ensures default
     }
 
     @PreUpdate
     public void onUpdate() {
-        this.lastUpdatedAt = LocalDateTime.now();
+        this.lastUpdatedAt = Instant.now();
     }
+
+    // Getters and Setters
 
     public Long getId() {
         return id;
@@ -113,19 +116,19 @@ public class Event {
         isActive = active;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getLastUpdatedAt() {
+    public Instant getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
+    public void setLastUpdatedAt(Instant lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 }
