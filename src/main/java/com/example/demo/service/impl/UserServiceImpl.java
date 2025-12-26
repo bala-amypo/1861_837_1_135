@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
@@ -55,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long id, User updated) {
-        User existing = findById(id);  // reuse the method above
+        User existing = findById(id);
 
         if (updated.getFullName() != null) {
             existing.setFullName(updated.getFullName());
