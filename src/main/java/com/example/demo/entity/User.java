@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "users")
@@ -24,11 +24,11 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public User() {}
 
-    public User(Long id, String fullName, String email, String password, Role role, LocalDateTime createdAt) {
+    public User(Long id, String fullName, String email, String password, Role role, Instant createdAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -39,7 +39,7 @@ public class User {
 
     @PrePersist
     public void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = Instant.now();
         if (this.role == null) {
             this.role = Role.SUBSCRIBER;
         }
@@ -85,11 +85,11 @@ public class User {
         this.role = role;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

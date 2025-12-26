@@ -1,7 +1,7 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "subscriptions", uniqueConstraints = {
@@ -21,11 +21,11 @@ public class Subscription {
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    private LocalDateTime subscribedAt;
+    private Instant subscribedAt;
 
     public Subscription() {}
 
-    public Subscription(Long id, User user, Event event, LocalDateTime subscribedAt) {
+    public Subscription(Long id, User user, Event event, Instant subscribedAt) {
         this.id = id;
         this.user = user;
         this.event = event;
@@ -34,7 +34,7 @@ public class Subscription {
 
     @PrePersist
     public void onCreate() {
-        this.subscribedAt = LocalDateTime.now();
+        this.subscribedAt = Instant.now();
     }
 
     public Long getId() {
@@ -61,11 +61,11 @@ public class Subscription {
         this.event = event;
     }
 
-    public LocalDateTime getSubscribedAt() {
+    public Instant getSubscribedAt() {
         return subscribedAt;
     }
 
-    public void setSubscribedAt(LocalDateTime subscribedAt) {
+    public void setSubscribedAt(Instant subscribedAt) {
         this.subscribedAt = subscribedAt;
     }
 }
