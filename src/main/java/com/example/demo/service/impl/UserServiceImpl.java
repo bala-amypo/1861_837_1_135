@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,18 +36,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new ResourceNotFoundException("User not found with email: " + email);
-        }
-        return user;
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 
     @Override
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
     }
 
     @Override
@@ -56,20 +52,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long id, User updated) {
-        User existing = findById(id);
+        User existing = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
-        if (updated.getFullName() != null) {
-            existing.setFullName(updated.getFullName());
-        }
+        if (updated.getFullName() != null) existing.setFullName(updated.getFullName());
         if (updated.getEmail() != null) {
             if (!existing.getEmail().equals(updated.getEmail()) && userRepository.existsByEmail(updated.getEmail())) {
                 throw new BadRequestException("Email already registered");
             }
             existing.setEmail(updated.getEmail());
         }
-        if (updated.getRole() != null) {
-            existing.setRole(updated.getRole());
-        }
+        if (updated.getRole() != null) existing.setRole(updated.getRole());
 
         return userRepository.save(existing);
     }

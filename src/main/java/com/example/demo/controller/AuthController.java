@@ -65,7 +65,8 @@ public class AuthController {
         );
 
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        User user = userService.findByEmail(request.getEmail()); // Removed .orElseThrow() — service throws if not found
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found after authentication"));
 
         String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
 
