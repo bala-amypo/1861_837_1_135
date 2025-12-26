@@ -9,7 +9,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,21 +27,25 @@ public class UserServiceImpl implements UserService {
             throw new BadRequestException("Email already registered");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        if (user.getRole() == null) {
+            user.setRole(Role.SUBSCRIBER);
+        }
         return userRepository.save(user);
     }
 
     @Override
-    public Optional<User> findByEmail(String email) {
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new ResourceNotFoundException("User not found");
+    public User findByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new ResourceNotFoundException("User not found with email: " + email);
         }
         return user;
     }
 
     @Override
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
     }
 
     @Override
@@ -52,18 +55,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(Long id, User updated) {
-        User existing = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        
-        if (updated.getFullName() != null) existing.setFullName(updated.getFullName());
+        User existing = findById(id);  // reuse the method above
+
+        if (updated.getFullName() != null) {
+            existing.setFullName(updated.getFullName());
+        }
         if (updated.getEmail() != null) {
             if (!existing.getEmail().equals(updated.getEmail()) && userRepository.existsByEmail(updated.getEmail())) {
-                 throw new BadRequestException("Email already registered");
+                throw new BadRequestException("Email already registered");
             }
             existing.setEmail(updated.getEmail());
         }
-        if (updated.getRole() != null) existing.setRole(updated.getRole());
-        
+        if (updated.getRole() != null) {
+            existing.setRole(updated.getRole());
+        }
+
         return userRepository.save(existing);
     }
 }
