@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.Instant;
 import java.util.*;
-
 @Listeners(TestResultListener.class)
 public class DigitalLocalEventBroadcastingApiTest {
 
@@ -276,9 +275,9 @@ public class DigitalLocalEventBroadcastingApiTest {
     @Test(priority = 17, groups = "ioc")
     public void testUserServiceRegisterEncryptsPassword() {
         User u = new User();
-        u.setEmail("x @y.com");
+        u.setEmail("x@y.com");
         u.setPassword("plain");
-        Mockito.when(userRepository.existsByEmail("x @y.com")).thenReturn(false);
+        Mockito.when(userRepository.existsByEmail("x@y.com")).thenReturn(false);
         Mockito.when(userRepository.save(Mockito.any(User.class))).thenAnswer(i -> i.getArgument(0));
 
         User saved = userService.register(u);
@@ -289,8 +288,8 @@ public class DigitalLocalEventBroadcastingApiTest {
     @Test(priority = 18, groups = "ioc")
     public void testUserServiceDuplicateEmail() {
         User u = new User();
-        u.setEmail("dup @y.com");
-        Mockito.when(userRepository.existsByEmail("dup @y.com")).thenReturn(true);
+        u.setEmail("dup@y.com");
+        Mockito.when(userRepository.existsByEmail("dup@y.com")).thenReturn(true);
         try {
             userService.register(u);
             Assert.fail("Expected BadRequestException");
@@ -302,17 +301,17 @@ public class DigitalLocalEventBroadcastingApiTest {
     @Test(priority = 19, groups = "ioc")
     public void testUserServiceFindByEmailUsesRepo() {
         User u = new User();
-        u.setEmail("a @b.com");
-        Mockito.when(userRepository.findByEmail("a @b.com")).thenReturn(Optional.of(u));
-        User found = userService.findByEmail("a @b.com").get();
-        Assert.assertEquals(found.getEmail(), "a @b.com");
+        u.setEmail("a@b.com");
+        Mockito.when(userRepository.findByEmail("a@b.com")).thenReturn(Optional.of(u));
+        User found = userService.findByEmail("a@b.com");
+        Assert.assertEquals(found.getEmail(), "a@b.com");
     }
 
     @Test(priority = 20, groups = "ioc")
     public void testUserServiceFindByEmailNotFound() {
-        Mockito.when(userRepository.findByEmail("zzz @x.com")).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByEmail("zzz@x.com")).thenReturn(Optional.empty());
         try {
-            userService.findByEmail("zzz @x.com");
+            userService.findByEmail("zzz@x.com");
             Assert.fail("Expected ResourceNotFoundException");
         } catch (Exception ex) {
             Assert.assertTrue(ex.getMessage().contains("User not found"));
@@ -410,7 +409,7 @@ public class DigitalLocalEventBroadcastingApiTest {
     public void testEventPreUpdateUpdatesLastUpdatedAt() {
         Event e = new Event();
         e.onCreate();
-        Instant first = java.sql.Timestamp.valueOf(e.getLastUpdatedAt()).toInstant();
+        Instant first = e.getLastUpdatedAt();
         e.onUpdate();
         Assert.assertNotNull(e.getLastUpdatedAt());
     }
@@ -418,7 +417,7 @@ public class DigitalLocalEventBroadcastingApiTest {
     @Test(priority = 27, groups = "hibernate")
     public void testUserPrePersistDefaultRole() {
         User u = new User();
-        u.setEmail("u @test.com");
+        u.setEmail("u@test.com");
         u.setPassword("x");
         u.onCreate();
         Assert.assertEquals(u.getRole(), Role.SUBSCRIBER);
@@ -653,7 +652,7 @@ public class DigitalLocalEventBroadcastingApiTest {
 
     @Test(priority = 49, groups = "security")
     public void testJwtTokenContainsUserIdAndRole() {
-        String token = jwtUtil.generateToken(1L, "user @test.com", "SUBSCRIBER");
+        String token = jwtUtil.generateToken(1L, "user@test.com", "SUBSCRIBER");
         Assert.assertTrue(jwtUtil.validateToken(token));
         Long userId = jwtUtil.getUserIdFromToken(token);
         String role = jwtUtil.getRoleFromToken(token);
@@ -668,34 +667,34 @@ public class DigitalLocalEventBroadcastingApiTest {
 
     @Test(priority = 51, groups = "security")
     public void testGenerateTokenDifferentUsers() {
-        String token1 = jwtUtil.generateToken(1L, "a @test.com", "ADMIN");
-        String token2 = jwtUtil.generateToken(2L, "b @test.com", "PUBLISHER");
+        String token1 = jwtUtil.generateToken(1L, "a@test.com", "ADMIN");
+        String token2 = jwtUtil.generateToken(2L, "b@test.com", "PUBLISHER");
         Assert.assertNotEquals(token1, token2);
     }
 
     @Test(priority = 52, groups = "security")
     public void testJwtUsernameExtraction() {
-        String token = jwtUtil.generateToken(3L, "x @test.com", "SUBSCRIBER");
+        String token = jwtUtil.generateToken(3L, "x@test.com", "SUBSCRIBER");
         String username = jwtUtil.getUsernameFromToken(token);
-        Assert.assertEquals(username, "x @test.com");
+        Assert.assertEquals(username, "x@test.com");
     }
 
     @Test(priority = 53, groups = "security")
     public void testJwtExpirationFuture() {
-        String token = jwtUtil.generateToken(5L, "y @test.com", "SUBSCRIBER");
+        String token = jwtUtil.generateToken(5L, "y@test.com", "SUBSCRIBER");
         Assert.assertTrue(jwtUtil.validateToken(token));
     }
 
     @Test(priority = 54, groups = "security")
     public void testJwtRoleClaimPresent() {
-        String token = jwtUtil.generateToken(10L, "role @test.com", "ADMIN");
+        String token = jwtUtil.generateToken(10L, "role@test.com", "ADMIN");
         String role = jwtUtil.getRoleFromToken(token);
         Assert.assertEquals(role, "ADMIN");
     }
 
     @Test(priority = 55, groups = "security")
     public void testJwtTamperedTokenFails() {
-        String token = jwtUtil.generateToken(1L, "x @test.com", "SUBSCRIBER");
+        String token = jwtUtil.generateToken(1L, "x@test.com", "SUBSCRIBER");
         String tampered = token + "abc";
         Assert.assertFalse(jwtUtil.validateToken(tampered));
     }
