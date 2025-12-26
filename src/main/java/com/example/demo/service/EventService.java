@@ -9,6 +9,6 @@ public interface EventService {
     Event getById(Long id);
     List<Event> getActiveEvents();
     void deactivateEvent(Long id);
-    Event getEventById(Long id);
-    List<Event> getAllEvents();
+    // Method alias from requirements "Event getEventById(Long id) – Alternative retrieval method"
+    Event getEventById(Long id); 
 }

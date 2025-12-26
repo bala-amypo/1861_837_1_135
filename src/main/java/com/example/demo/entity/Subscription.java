@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "subscriptions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"user_id", "event_id"})
+    @UniqueConstraint(columnNames = {"user_id", "event_id"})
 })
 public class Subscription {
 
@@ -13,15 +13,14 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
-    @Column(updatable = false)
     private LocalDateTime subscribedAt;
 
     public Subscription() {}
@@ -35,9 +34,7 @@ public class Subscription {
 
     @PrePersist
     public void onCreate() {
-        if (subscribedAt == null) {
-            subscribedAt = LocalDateTime.now();
-        }
+        this.subscribedAt = LocalDateTime.now();
     }
 
     public Long getId() {

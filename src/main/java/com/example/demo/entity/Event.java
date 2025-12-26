@@ -1,7 +1,6 @@
 package com.example.demo.entity;
 
 import jakarta.persistence.*;
-import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -23,39 +22,19 @@ public class Event {
 
     private String category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "publisher_id", nullable = false)
     private User publisher;
 
     @Column(nullable = false)
     private boolean isActive = true;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
-
-    private Instant lastUpdatedAt; // Test expects Instant for lastUpdatedAt based on usage? 
-    // Wait, requirement says "lastUpdatedAt (LocalDateTime, auto-updated)".
-    // But test code: `Instant first = e.getLastUpdatedAt();` in `testEventPreUpdateUpdatesLastUpdatedAt`.
-    // I should use Instant if the test demands it, or LocalDateTime if requirements demand it. 
-    // Usually code follows requirements, but tests fail if types mismatch.
-    // The requirements say LocalDateTime. The test says `Instant`. 
-    // Let's check `testEventPreUpdateUpdatesLastUpdatedAt` again.
-    // `Instant first = e.getLastUpdatedAt();`
-    // I will use Instant for lastUpdatedAt to satisfy the test, but LocalDateTime for createdAt.
-    // Actually, mixing them is weird. Let's look closer at the test code.
-    // `Instant first = e.getLastUpdatedAt();`
-    // `public void testEventPrePersistSetsTimestamps()` also asserts not null.
-    // I'll stick to Instant for lastUpdatedAt to match the test variable type assignment.
-    // Wait, if I change it to LocalDateTime, the test `Instant first = ...` will fail compilation.
-    // So I MUST use Instant for lastUpdatedAt.
-    
-    // However, requirement says `createdAt (LocalDateTime)`.
-    // Test `testEventPrePersistSetsTimestamps` doesn't assign createdAt to a variable, just asserts not null.
-    // So LocalDateTime is fine for createdAt.
+    private LocalDateTime lastUpdatedAt;
 
     public Event() {}
 
-    public Event(Long id, String title, String description, String location, String category, User publisher, boolean isActive, LocalDateTime createdAt, Instant lastUpdatedAt) {
+    public Event(Long id, String title, String description, String location, String category, User publisher, boolean isActive, LocalDateTime createdAt, LocalDateTime lastUpdatedAt) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -69,17 +48,13 @@ public class Event {
 
     @PrePersist
     public void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (lastUpdatedAt == null) {
-            lastUpdatedAt = Instant.now();
-        }
+        this.createdAt = LocalDateTime.now();
+        this.lastUpdatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
     public void onUpdate() {
-        lastUpdatedAt = Instant.now();
+        this.lastUpdatedAt = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -146,11 +121,11 @@ public class Event {
         this.createdAt = createdAt;
     }
 
-    public Instant getLastUpdatedAt() {
+    public LocalDateTime getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    public void setLastUpdatedAt(Instant lastUpdatedAt) {
+    public void setLastUpdatedAt(LocalDateTime lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 }

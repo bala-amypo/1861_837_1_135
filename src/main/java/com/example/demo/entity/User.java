@@ -24,7 +24,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @Column(updatable = false)
     private LocalDateTime createdAt;
 
     public User() {}
@@ -40,11 +39,9 @@ public class User {
 
     @PrePersist
     public void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-        if (role == null) {
-            role = Role.SUBSCRIBER;
+        this.createdAt = LocalDateTime.now();
+        if (this.role == null) {
+            this.role = Role.SUBSCRIBER;
         }
     }
 

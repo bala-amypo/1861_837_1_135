@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.entity.Event;
 import com.example.demo.entity.Subscription;
 import com.example.demo.entity.User;
-import com.example.demo.entity.Event;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.EventRepository;
@@ -36,19 +36,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+
+        Subscription subscription = new Subscription();
+        subscription.setUser(user);
+        subscription.setEvent(event);
         
-        Subscription sub = new Subscription();
-        sub.setUser(user);
-        sub.setEvent(event);
-        
-        return subscriptionRepository.save(sub);
+        return subscriptionRepository.save(subscription);
     }
 
     @Override
     public void unsubscribe(Long userId, Long eventId) {
-        Subscription sub = subscriptionRepository.findByUserIdAndEventId(userId, eventId)
-                .orElseThrow(() -> new BadRequestException("Subscription not found")); // Test expects BadRequestException here
-        subscriptionRepository.delete(sub);
+        Subscription subscription = subscriptionRepository.findByUserIdAndEventId(userId, eventId)
+                .orElseThrow(() -> new BadRequestException("Subscription not found")); // Using BadRequest as per Section 6.4 rules logic, though ResourceNotFound might be cleaner. Text says throws "Subscription not found".
+        
+        subscriptionRepository.delete(subscription);
     }
 
     @Override

@@ -1,11 +1,13 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.AuthResponse;
 import com.example.demo.dto.RegisterRequest;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
-import com.example.demo.security.JwtUtil;
 import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,45 +16,44 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
+@Tag(name = "User", description = "User management endpoints")
 public class UserController {
 
     private final UserService userService;
-    private final JwtUtil jwtUtil; // Maybe needed if we return token, but for admin create maybe just user info?
-    // Requirement says returns AuthResponse for registration.
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(summary = "Register user (Admin only)")
+    public ResponseEntity<User> registerUser(@Valid @RequestBody RegisterRequest request) {
         User user = new User();
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
         if (request.getRole() != null) {
-            user.setRole(Role.valueOf(request.getRole()));
+            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
         }
-        User saved = userService.register(user);
-
-        String token = jwtUtil.generateToken(saved.getId(), saved.getEmail(), saved.getRole().name());
-        return ResponseEntity.ok(new AuthResponse(token, saved.getId(), saved.getEmail(), saved.getRole().name()));
+        return new ResponseEntity<>(userService.register(user), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.of(userService.findById(id));
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @Operation(summary = "Get all users (Admin only)")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update user")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
         return ResponseEntity.ok(userService.updateUser(id, user));
     }

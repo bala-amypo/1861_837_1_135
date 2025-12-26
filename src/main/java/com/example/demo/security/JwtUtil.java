@@ -5,21 +5,19 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtUtil {
 
-    private final String secret;
-    private final long validityInMs;
     private final Key key;
+    private final long validityInMs;
 
-    public JwtUtil(@Value("${jwt.secret:ThisIsAVerySecureSecretKeyForJwtDemo123456789}") String secret,
-                   @Value("${jwt.expiration:3600000}") long validityInMs) {
-        this.secret = secret;
+    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long validityInMs) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.validityInMs = validityInMs;
-        this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
     public String generateToken(Long userId, String email, String role) {
@@ -45,10 +43,6 @@ public class JwtUtil {
         }
     }
 
-    public Claims getClaims(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-    }
-
     public String getEmailFromToken(String token) {
         return getClaims(token).getSubject();
     }
@@ -63,5 +57,13 @@ public class JwtUtil {
 
     public Long getUserIdFromToken(String token) {
         return getClaims(token).get("userId", Long.class);
+    }
+
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

@@ -50,17 +50,16 @@ public class DigitalLocalEventBroadcastingApiTest {
         broadcastLogRepository = Mockito.mock(BroadcastLogRepository.class);
 
         passwordEncoder = new BCryptPasswordEncoder();
-        
-        // Initialize services strictly
         userService = new UserServiceImpl(userRepository, passwordEncoder);
         eventService = new EventServiceImpl(eventRepository, userRepository);
-        
-        broadcastService = new BroadcastServiceImpl(eventUpdateRepository, subscriptionRepository, broadcastLogRepository);
-        eventUpdateService = new EventUpdateServiceImpl(eventUpdateRepository, eventRepository, broadcastService);
+        eventUpdateService = new EventUpdateServiceImpl(eventUpdateRepository, eventRepository);
         subscriptionService = new SubscriptionServiceImpl(subscriptionRepository, userRepository, eventRepository);
+        broadcastService = new BroadcastServiceImpl(eventUpdateRepository, subscriptionRepository, broadcastLogRepository);
 
         jwtUtil = new JwtUtil("ThisIsAVerySecureSecretKeyForJwtDemo123456789", 3600000);
     }
+
+    // 1. Simple servlet
 
     public static class HelloServlet extends HttpServlet {
         @Override
@@ -296,7 +295,7 @@ public class DigitalLocalEventBroadcastingApiTest {
             userService.register(u);
             Assert.fail("Expected BadRequestException");
         } catch (Exception ex) {
-            Assert.assertTrue(ex.getMessage().contains("Email already registered") || ex.getMessage().contains("Email already exists"));
+            Assert.assertTrue(ex.getMessage().contains("Email already registered"));
         }
     }
 
@@ -305,15 +304,19 @@ public class DigitalLocalEventBroadcastingApiTest {
         User u = new User();
         u.setEmail("a @b.com");
         Mockito.when(userRepository.findByEmail("a @b.com")).thenReturn(Optional.of(u));
-        Optional<User> found = userService.findByEmail("a @b.com");
-        Assert.assertEquals(found.get().getEmail(), "a @b.com");
+        User found = userService.findByEmail("a @b.com").get();
+        Assert.assertEquals(found.getEmail(), "a @b.com");
     }
 
     @Test(priority = 20, groups = "ioc")
     public void testUserServiceFindByEmailNotFound() {
         Mockito.when(userRepository.findByEmail("zzz @x.com")).thenReturn(Optional.empty());
-        Optional<User> result = userService.findByEmail("zzz @x.com");
-        Assert.assertTrue(result.isEmpty());
+        try {
+            userService.findByEmail("zzz @x.com");
+            Assert.fail("Expected ResourceNotFoundException");
+        } catch (Exception ex) {
+            Assert.assertTrue(ex.getMessage().contains("User not found"));
+        }
     }
 
     @Test(priority = 21, groups = "ioc")
@@ -407,7 +410,7 @@ public class DigitalLocalEventBroadcastingApiTest {
     public void testEventPreUpdateUpdatesLastUpdatedAt() {
         Event e = new Event();
         e.onCreate();
-        Instant first = e.getLastUpdatedAt();
+        Instant first = java.sql.Timestamp.valueOf(e.getLastUpdatedAt()).toInstant();
         e.onUpdate();
         Assert.assertNotNull(e.getLastUpdatedAt());
     }

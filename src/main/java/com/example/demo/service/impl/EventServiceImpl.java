@@ -10,7 +10,6 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.service.EventService;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -27,7 +26,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Event createEvent(Event event) {
         User publisher = userRepository.findById(event.getPublisher().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found"));
         
         if (publisher.getRole() != Role.ADMIN && publisher.getRole() != Role.PUBLISHER) {
             throw new BadRequestException("Only PUBLISHER or ADMIN can create events");
@@ -44,9 +43,7 @@ public class EventServiceImpl implements EventService {
         existing.setTitle(updated.getTitle());
         existing.setDescription(updated.getDescription());
         existing.setLocation(updated.getLocation());
-        existing.setCategory(updated.getCategory());
-        // Trigger update timestamp
-        existing.onUpdate();
+        if (updated.getCategory() != null) existing.setCategory(updated.getCategory());
         
         return eventRepository.save(existing);
     }
@@ -64,19 +61,14 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deactivateEvent(Long id) {
-        Event existing = eventRepository.findById(id)
+        Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
-        existing.setActive(false);
-        eventRepository.save(existing);
+        event.setActive(false);
+        eventRepository.save(event);
     }
-
+    
     @Override
     public Event getEventById(Long id) {
         return getById(id);
-    }
-
-    @Override
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
     }
 }

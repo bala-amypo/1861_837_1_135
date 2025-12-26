@@ -11,11 +11,11 @@ public class BroadcastLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_update_id", nullable = false)
     private EventUpdate eventUpdate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id", nullable = false)
     private User subscriber;
 
@@ -23,7 +23,6 @@ public class BroadcastLog {
     @Column(nullable = false)
     private DeliveryStatus deliveryStatus = DeliveryStatus.SENT;
 
-    @Column(updatable = false)
     private LocalDateTime sentAt;
 
     public BroadcastLog() {}
@@ -38,11 +37,9 @@ public class BroadcastLog {
 
     @PrePersist
     public void onCreate() {
-        if (sentAt == null) {
-            sentAt = LocalDateTime.now();
-        }
-        if (deliveryStatus == null) {
-            deliveryStatus = DeliveryStatus.SENT;
+        this.sentAt = LocalDateTime.now();
+        if (this.deliveryStatus == null) {
+            this.deliveryStatus = DeliveryStatus.SENT;
         }
     }
 

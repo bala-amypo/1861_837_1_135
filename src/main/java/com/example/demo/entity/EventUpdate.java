@@ -11,7 +11,7 @@ public class EventUpdate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
@@ -22,7 +22,6 @@ public class EventUpdate {
     @Column(nullable = false)
     private UpdateType updateType;
 
-    @Column(updatable = false)
     private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
@@ -41,11 +40,9 @@ public class EventUpdate {
 
     @PrePersist
     public void onCreate() {
-        if (timestamp == null) {
-            timestamp = LocalDateTime.now();
-        }
-        if (severityLevel == null) {
-            severityLevel = SeverityLevel.LOW;
+        this.timestamp = LocalDateTime.now();
+        if (this.severityLevel == null) {
+            this.severityLevel = SeverityLevel.LOW;
         }
     }
 
