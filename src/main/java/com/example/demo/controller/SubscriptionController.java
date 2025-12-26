@@ -29,8 +29,9 @@ public class SubscriptionController {
 
     private Long getCurrentUserId(Authentication authentication) {
         String email = authentication.getName();
-        User user = userService.findByEmail(email);
-        return user.getId();
+        return userService.findByEmail(email)
+                .map(User::getId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     @PostMapping("/{eventId}")
