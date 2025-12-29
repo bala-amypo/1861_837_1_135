@@ -24,7 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole().name())
+                // .roles() adds "ROLE_" prefix. Use .authorities() to use the exact string "PUBLISHER"
+                .authorities(user.getRole().name()) 
                 .build();
     }
 }
